@@ -6,17 +6,17 @@ import { useUser } from "@/hooks/useUser";
 
 export default function Index() {
   const rootNavigationState = useRootNavigationState();
-  const { user } = useUser();
+  const { isLoggedIn } = useUser();
 
   useEffect(() => {
     if (rootNavigationState?.key) {
-      if (user) {
+      if (isLoggedIn) {
         router.replace("/entry");
       } else {
         router.replace("/login");
       }
     }
-  }, [rootNavigationState?.key, user]);
+  }, [rootNavigationState?.key]);
   return (
     <View
       style={{

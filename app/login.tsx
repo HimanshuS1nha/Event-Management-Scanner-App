@@ -22,7 +22,7 @@ import { useUser } from "@/hooks/useUser";
 import { loginValidator } from "@/validators/login-validator";
 
 const Login = () => {
-  const { setUser } = useUser();
+  const { setIsLoggedIn } = useUser();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,9 +62,9 @@ const Login = () => {
     },
     onSuccess: async (data) => {
       await SecureStore.setItemAsync("token", data.token);
-      await SecureStore.setItemAsync("user", JSON.stringify(data.scanner));
+      await SecureStore.setItemAsync("is-logged-in", "true");
 
-      setUser(data.scanner);
+      setIsLoggedIn(true);
       router.replace("/entry");
     },
     onError: (error) => {
