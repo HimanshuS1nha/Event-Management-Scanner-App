@@ -1,23 +1,27 @@
 import { View, Text, Pressable, Alert } from "react-native";
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import tw from "twrnc";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useIsFocused } from "@react-navigation/native";
 import { CameraView, BarcodeScanningResult } from "expo-camera";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { Picker } from "@react-native-picker/picker";
 
 import SafeView from "@/components/SafeView";
 import LoadingModal from "@/components/LoadingModal";
 import { useUser } from "@/hooks/useUser";
 
-const Entry = () => {
-  const isFocused = useIsFocused();
+const CameraComponent = () => {
   const { handleLogout } = useUser();
 
   const [scanned, setScanned] = useState(false);
+  const [type, setType] = useState<string>("entry");
+
+  const changeType = useCallback((value: string) => {
+    setType(value);
+  }, []);
 
   const onBarcodeScanned = useCallback(
     (result: BarcodeScanningResult) => {
@@ -28,7 +32,7 @@ const Entry = () => {
   );
 
   const { mutate: handleUserEntry, isPending } = useMutation({
-    mutationKey: ["user-entry"],
+    mutationKey: [`user-${type}`],
     mutationFn: async (id: string) => {
       const token = await SecureStore.getItemAsync("token");
       if (!token) {
@@ -36,7 +40,7 @@ const Entry = () => {
       }
 
       const { data } = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/user-entry`
+        `${process.env.EXPO_PUBLIC_API_URL}/user-${type}`
       );
 
       return data;
@@ -75,21 +79,30 @@ const Entry = () => {
         </Pressable>
       </View>
 
-      <View style={tw`items-center mb-5`}>
+      <View style={tw`items-center gap-y-4 mb-5 w-full`}>
+        <View style={tw`border border-white rounded-lg w-[70%]`}>
+          <Picker
+            onValueChange={changeType}
+            selectedValue={type}
+            dropdownIconColor={"#fff"}
+            dropdownIconRippleColor={"#000"}
+          >
+            <Picker.Item label="Entry" value={"entry"} style={tw`text-white`} />
+            <Picker.Item label="Exit" value={"exit"} style={tw`text-white`} />
+          </Picker>
+        </View>
         <Text style={tw`text-white font-semibold text-lg`}>
           {scanned ? "Not scanning" : "Scanning..."}
         </Text>
       </View>
 
-      {isFocused && (
-        <CameraView
-          style={tw`h-[70%]`}
-          facing="back"
-          onBarcodeScanned={onBarcodeScanned}
-        ></CameraView>
-      )}
+      <CameraView
+        style={tw`h-[60%]`}
+        facing="back"
+        onBarcodeScanned={onBarcodeScanned}
+      ></CameraView>
 
-      <View style={tw`items-center mt-6`}>
+      <View style={tw`items-center absolute bottom-5 w-full`}>
         {scanned && (
           <Pressable
             onPress={() => setScanned(false)}
@@ -104,4 +117,4 @@ const Entry = () => {
   );
 };
 
-export default Entry;
+export default CameraComponent;

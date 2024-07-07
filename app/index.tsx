@@ -23,7 +23,7 @@ export default function Index() {
     if (rootNavigationState?.key) {
       if (isLoggedIn) {
         if (permission?.granted) {
-          router.replace("/entry");
+          router.replace("/home");
         } else if (permission?.canAskAgain) {
           requestPermission();
         } else {
@@ -43,6 +43,7 @@ export default function Index() {
           );
         }
       } else {
+        router.replace("/login");
       }
     }
   }, [rootNavigationState?.key, permission?.granted]);
@@ -53,7 +54,7 @@ export default function Index() {
         style={tw`w-32 h-32 rounded-full`}
       />
       <Text style={tw`text-white text-2xl font-medium`}>
-        Event Management Head App
+        Event Management Scanner App
       </Text>
 
       <ActivityIndicator size={45} color={"violet"} />
