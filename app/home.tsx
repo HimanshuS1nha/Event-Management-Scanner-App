@@ -8,6 +8,7 @@ import * as SecureStore from "expo-secure-store";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { Picker } from "@react-native-picker/picker";
+import Slider from "@react-native-community/slider";
 
 import SafeView from "@/components/SafeView";
 import LoadingModal from "@/components/LoadingModal";
@@ -18,18 +19,15 @@ const CameraComponent = () => {
 
   const [scanned, setScanned] = useState(false);
   const [type, setType] = useState<string>("entry");
+  const [zoom, setZoom] = useState(0);
 
   const changeType = useCallback((value: string) => {
     setType(value);
   }, []);
 
-  const onBarcodeScanned = useCallback(
-    (result: BarcodeScanningResult) => {
-      setScanned(true);
-      handleUserEntry(result.data);
-    },
-    [scanned]
-  );
+  const changeZoom = useCallback((value: number) => {
+    setZoom(value);
+  }, []);
 
   const { mutate: handleUserEntry, isPending } = useMutation({
     mutationKey: [`user-${type}`],
@@ -45,6 +43,9 @@ const CameraComponent = () => {
 
       return data;
     },
+    onSuccess: (data) => {
+      router.push({ pathname: "/result", params: {} });
+    },
     onError: (error) => {
       if (error instanceof AxiosError && error.response?.data.error) {
         Alert.alert("Error", error.response?.data.error);
@@ -55,6 +56,14 @@ const CameraComponent = () => {
       }
     },
   });
+
+  const onBarcodeScanned = useCallback(
+    (result: BarcodeScanningResult) => {
+      setScanned(true);
+      handleUserEntry(result.data);
+    },
+    [scanned]
+  );
   return (
     <SafeView style={tw`justify-center`}>
       <LoadingModal isVisible={isPending} />
@@ -79,7 +88,7 @@ const CameraComponent = () => {
         </Pressable>
       </View>
 
-      <View style={tw`items-center gap-y-4 mb-5 w-full`}>
+      <View style={tw`items-center gap-y-4 mb-5 w-full -mt-6`}>
         <View style={tw`border border-white rounded-lg w-[70%]`}>
           <Picker
             onValueChange={changeType}
@@ -98,9 +107,22 @@ const CameraComponent = () => {
 
       <CameraView
         style={tw`h-[60%]`}
+        zoom={zoom}
         facing="back"
-        onBarcodeScanned={onBarcodeScanned}
-      ></CameraView>
+        onBarcodeScanned={scanned ? undefined : onBarcodeScanned}
+      >
+        <View style={tw`absolute bottom-3 w-full items-center`}>
+          <Slider
+            style={tw`w-[80%]`}
+            minimumValue={0}
+            maximumValue={1}
+            minimumTrackTintColor="#2563eb"
+            maximumTrackTintColor="#ffffff"
+            value={zoom}
+            onValueChange={changeZoom}
+          />
+        </View>
+      </CameraView>
 
       <View style={tw`items-center absolute bottom-5 w-full`}>
         {scanned && (

@@ -6,7 +6,7 @@ import {
   BackHandler,
   Linking,
 } from "react-native";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { router, useRootNavigationState } from "expo-router";
 import { useCameraPermissions } from "expo-camera";
 import tw from "twrnc";
@@ -19,34 +19,34 @@ export default function Index() {
   const { isLoggedIn } = useUser();
   const [permission, requestPermission] = useCameraPermissions();
 
+  const getPermission = useCallback(async () => {
+    if (permission?.granted) {
+      router.replace("/home");
+    } else if (permission?.canAskAgain) {
+      await requestPermission();
+    } else {
+      Alert.alert("Error", "This app needs the camera permission to operate", [
+        {
+          text: "Cancel",
+          onPress: BackHandler.exitApp,
+        },
+        {
+          text: "Open Settings",
+          onPress: Linking.openSettings,
+        },
+      ]);
+    }
+  }, [permission]);
+
   useEffect(() => {
     if (rootNavigationState?.key) {
       if (isLoggedIn) {
-        if (permission?.granted) {
-          router.replace("/home");
-        } else if (permission?.canAskAgain) {
-          requestPermission();
-        } else {
-          Alert.alert(
-            "Error",
-            "This app needs the camera permission to operate",
-            [
-              {
-                text: "Cancel",
-                onPress: BackHandler.exitApp,
-              },
-              {
-                text: "Open Settings",
-                onPress: Linking.openSettings,
-              },
-            ]
-          );
-        }
+        getPermission();
       } else {
         router.replace("/login");
       }
     }
-  }, [rootNavigationState?.key, permission?.granted]);
+  }, [rootNavigationState?.key, permission]);
   return (
     <SafeView style={tw`justify-center items-center gap-y-7`}>
       <Image

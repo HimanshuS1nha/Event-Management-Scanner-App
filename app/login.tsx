@@ -65,7 +65,7 @@ const Login = () => {
       await SecureStore.setItemAsync("is-logged-in", "true");
 
       setIsLoggedIn(true);
-      router.replace("/entry");
+      router.replace("/home");
     },
     onError: (error) => {
       if (error instanceof ZodError) {
