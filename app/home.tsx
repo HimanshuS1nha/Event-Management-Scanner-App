@@ -13,9 +13,11 @@ import Slider from "@react-native-community/slider";
 import SafeView from "@/components/SafeView";
 import LoadingModal from "@/components/LoadingModal";
 import { useUser } from "@/hooks/useUser";
+import { EntrantType, useEntrant } from "@/hooks/useEntrant";
 
-const CameraComponent = () => {
+const Home = () => {
   const { handleLogout } = useUser();
+  const { setValues } = useEntrant();
 
   const [scanned, setScanned] = useState(false);
   const [type, setType] = useState<string>("entry");
@@ -41,10 +43,11 @@ const CameraComponent = () => {
         `${process.env.EXPO_PUBLIC_API_URL}/user-${type}`
       );
 
-      return data;
+      return data as { user: EntrantType; isSuccess: boolean };
     },
     onSuccess: (data) => {
-      router.push({ pathname: "/result", params: {} });
+      setValues(data.user, data.isSuccess, type);
+      router.push("/result");
     },
     onError: (error) => {
       if (error instanceof AxiosError && error.response?.data.error) {
@@ -139,4 +142,4 @@ const CameraComponent = () => {
   );
 };
 
-export default CameraComponent;
+export default Home;
