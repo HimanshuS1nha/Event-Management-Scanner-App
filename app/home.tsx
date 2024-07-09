@@ -40,7 +40,8 @@ const Home = () => {
       }
 
       const { data } = await axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/user-${type}`
+        `${process.env.EXPO_PUBLIC_API_URL}/user-${type}`,
+        { id, token }
       );
 
       return data as { user: EntrantType; isSuccess: boolean };
