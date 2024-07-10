@@ -1,7 +1,7 @@
 import { View, Text, Image, Pressable } from "react-native";
 import React, { useCallback } from "react";
 import tw from "twrnc";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 
 import SafeView from "@/components/SafeView";
 import { useEntrant } from "@/hooks/useEntrant";
@@ -21,7 +21,7 @@ const Result = () => {
     <SafeView>
       <View style={tw`flex-1 items-center justify-center gap-y-16`}>
         <View style={tw`gap-y-5 items-center`}>
-          <Image source={image as any} style={tw`w-24 h-24 rounded-full`} />
+          <Image source={image} style={tw`w-24 h-24 rounded-full`} />
           <Text
             style={tw`${
               isSuccess ? "text-green-600" : "text-rose-600"

@@ -22,6 +22,7 @@ const Home = () => {
   const [scanned, setScanned] = useState(false);
   const [type, setType] = useState<string>("entry");
   const [zoom, setZoom] = useState(0);
+  const [color, setColor] = useState<"white" | "black">("white");
 
   const changeType = useCallback((value: string) => {
     setType(value);
@@ -30,6 +31,11 @@ const Home = () => {
   const changeZoom = useCallback((value: number) => {
     setZoom(value);
   }, []);
+
+  const changeColor = useCallback(
+    (value: "white" | "black") => setColor(value),
+    []
+  );
 
   const { mutate: handleUserEntry, isPending } = useMutation({
     mutationKey: [`user-${type}`],
@@ -99,9 +105,19 @@ const Home = () => {
             selectedValue={type}
             dropdownIconColor={"#fff"}
             dropdownIconRippleColor={"#000"}
+            onFocus={() => changeColor("black")}
+            onBlur={() => changeColor("white")}
           >
-            <Picker.Item label="Entry" value={"entry"} style={tw`text-white`} />
-            <Picker.Item label="Exit" value={"exit"} style={tw`text-white`} />
+            <Picker.Item
+              label="Entry"
+              value={"entry"}
+              style={tw`text-${color}`}
+            />
+            <Picker.Item
+              label="Exit"
+              value={"exit"}
+              style={tw`text-${color}`}
+            />
           </Picker>
         </View>
         <Text style={tw`text-white font-semibold text-lg`}>
@@ -110,11 +126,25 @@ const Home = () => {
       </View>
 
       <CameraView
-        style={tw`h-[60%]`}
+        style={tw`h-[60%] justify-center items-center`}
         zoom={zoom}
         facing="back"
         onBarcodeScanned={scanned ? undefined : onBarcodeScanned}
       >
+        <View style={tw`w-68 h-68 items-center justify-center`}>
+          <View
+            style={tw`border-l-4 border-t-4 border-white w-12 h-12 absolute top-0 left-0`}
+          ></View>
+          <View
+            style={tw`border-r-4 border-t-4 border-white w-12 h-12 absolute top-0 right-0`}
+          ></View>
+          <View
+            style={tw`border-r-4 border-b-4 border-white w-12 h-12 absolute bottom-0 right-0`}
+          ></View>
+          <View
+            style={tw`border-l-4 border-b-4 border-white w-12 h-12 absolute bottom-0 left-0`}
+          ></View>
+        </View>
         <View style={tw`absolute bottom-3 w-full items-center`}>
           <Slider
             style={tw`w-[80%]`}
