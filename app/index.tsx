@@ -22,21 +22,27 @@ export default function Index() {
   const getPermission = useCallback(async () => {
     if (permission?.granted) {
       router.replace("/home");
-    } else if (permission?.canAskAgain) {
-      await requestPermission();
     } else {
-      Alert.alert("Error", "This app needs the camera permission to operate", [
-        {
-          text: "Cancel",
-          onPress: BackHandler.exitApp,
-        },
-        {
-          text: "Open Settings",
-          onPress: Linking.openSettings,
-        },
-      ]);
+      if (permission?.canAskAgain) {
+        await requestPermission();
+      } else {
+        Alert.alert(
+          "Error",
+          "This app needs the camera permission to operate",
+          [
+            {
+              text: "Cancel",
+              onPress: BackHandler.exitApp,
+            },
+            {
+              text: "Open Settings",
+              onPress: Linking.openSettings,
+            },
+          ]
+        );
+      }
     }
-  }, [permission]);
+  }, [permission?.granted]);
 
   useEffect(() => {
     if (rootNavigationState?.key) {
