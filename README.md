@@ -24,7 +24,7 @@ This is a part of the full stack event management app. Scan QR codes to verify e
 
 ## Demo
 
-Live Demo - Coming Soon
+Live Demo - [Click Here](https://www.youtube.com/shorts/CYklkA0_W_E)
 
 ## OTHER LINKS
 
